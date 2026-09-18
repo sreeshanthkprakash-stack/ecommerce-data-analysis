@@ -41,6 +41,95 @@ Raw Kaggle CSV (data/raw/Ecommerce.csv)
 
 ---
 
+## 🏛️ Data Warehouse Star Schema & ER Diagram
+
+The Gold Layer is structured as a high-performance **Star Schema (1 Fact Table + 6 Dimension Tables)** connected through 1-to-many (`1:*`) relationships:
+
+```mermaid
+erDiagram
+    dim_customer ||--o{ fact_session : "1 to many"
+    dim_product ||--o{ fact_session : "1 to many"
+    dim_date ||--o{ fact_session : "1 to many"
+    dim_device ||--o{ fact_session : "1 to many"
+    dim_marketing ||--o{ fact_session : "1 to many"
+    dim_payment ||--o{ fact_session : "1 to many"
+
+    dim_customer {
+        bigint customer_key PK "Surrogate Key"
+        bigint customer_id "Natural Key"
+        smallint user_type "0: Guest, 1: Registered"
+        integer location "City / Region Code"
+    }
+
+    dim_product {
+        bigint product_key PK "Surrogate Key"
+        bigint product_id "Natural Key"
+        smallint product_category "Category Identifier"
+    }
+
+    dim_date {
+        integer date_key PK "YYYYMMDD Integer Key"
+        date full_date "Calendar Date"
+        integer day "Day of Month (1-31)"
+        integer month "Month (1-12)"
+        varchar month_name "Month Name"
+        integer quarter "Quarter (Q1-Q4)"
+        integer year "Calendar Year"
+        varchar season "Winter / Spring / Summer / Monsoon"
+        integer weekday "Day of Week (1-7)"
+        varchar weekday_name "Monday-Sunday"
+    }
+
+    dim_device {
+        bigint device_key PK "Surrogate Key"
+        smallint device_type "0: Desktop, 1: Mobile, 2: Tablet"
+    }
+
+    dim_marketing {
+        bigint marketing_key PK "Surrogate Key"
+        smallint marketing_channel "Organic, Direct, Social, Email, Paid"
+    }
+
+    dim_payment {
+        bigint payment_key PK "Surrogate Key"
+        smallint payment_method "UPI, Card, NetBanking, COD, Wallet"
+    }
+
+    fact_session {
+        bigint session_key PK "Surrogate Key"
+        varchar session_id "Session Identifier"
+        bigint customer_key FK "References dim_customer"
+        bigint product_key FK "References dim_product"
+        integer date_key FK "References dim_date"
+        bigint device_key FK "References dim_device"
+        bigint marketing_key FK "References dim_marketing"
+        bigint payment_key FK "References dim_payment"
+        integer quantity "Units Purchased"
+        numeric price "Unit Price (INR)"
+        numeric discount_percent "Applied Discount %"
+        numeric discount_amount "Discount Value (INR)"
+        numeric profit "Net Profit"
+        integer pages_viewed "Browsing Depth"
+        smallint added_to_cart "1 if Added to Cart, 0 otherwise"
+        smallint cart_abandoned "1 if Cart Abandoned, 0 otherwise"
+        smallint purchase "1 if Purchased, 0 otherwise"
+    }
+```
+
+### 📋 Schema Table Reference
+
+| Table Name | Type | Primary / Foreign Key | Description |
+| :--- | :--- | :--- | :--- |
+| `gold.fact_session` | **Fact** | `session_key` (PK), 6 FKs | Core transaction & session metrics (revenue, cart abandonment, quantity, profit) |
+| `gold.dim_customer` | **Dimension** | `customer_key` (PK) | Customer profile, registration tier, and location details |
+| `gold.dim_product` | **Dimension** | `product_key` (PK) | Product master and category classifications |
+| `gold.dim_date` | **Dimension** | `date_key` (PK) | Date calendar dimensions, seasons, quarters, and day names |
+| `gold.dim_device` | **Dimension** | `device_key` (PK) | Browsing device type (Mobile, Desktop, Tablet) |
+| `gold.dim_marketing`| **Dimension** | `marketing_key` (PK) | Acquisition channels (SEO, Direct, Paid Ads, Social) |
+| `gold.dim_payment` | **Dimension** | `payment_key` (PK) | Payment gateways & transaction methods (UPI, Cards, COD) |
+
+---
+
 ## 📂 Project Structure
 
 ```bash
