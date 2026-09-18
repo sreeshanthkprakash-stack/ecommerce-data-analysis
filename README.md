@@ -1,73 +1,119 @@
-# 🛒 E-Commerce End-to-End Data Engineering Pipeline
+# 🛒 Indian E-Commerce End-to-End Data Engineering & BI Analytics Platform
 
-A robust, production-ready **Medallion Architecture (Bronze ➔ Silver ➔ Gold)** Data Engineering & Analytics project built using **Apache PySpark**, **PostgreSQL**, and **Power BI**.
+[![Apache Spark](https://img.shields.io/badge/Apache%20Spark-3.x-E25A1C?logo=apachespark&logoColor=white)](https://spark.apache.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14%2B-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Power BI](https://img.shields.io/badge/Power%20BI-Desktop-F2C811?logo=powerbi&logoColor=black)](https://powerbi.microsoft.com/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 
----
-
-## 📌 Architecture Overview
-
-```
-Raw CSV Data
-    │
-    ▼
-[ Bronze Layer ]   ➔ Raw Parquet ingestion (lossless preservation)
-    │
-    ▼
-[ Silver Layer ]   ➔ Data cleaning, schema enforcement, normalization & deduplication
-    │
-    ▼
-[ Gold Layer ]     ➔ Star Schema dimensional modeling (Dimensions & Fact tables)
-    │
-    ▼
-[ PostgreSQL DW ]  ➔ Distributed batch write via JDBC driver to relational DW
-    │
-    ▼
-[ Power BI / SQL ] ➔ Business intelligence dashboards & analytical SQL queries
-```
+An enterprise-grade **Medallion Architecture (Bronze ➔ Silver ➔ Gold)** Data Engineering and Business Intelligence pipeline built with **Apache PySpark**, **PostgreSQL Data Warehouse**, and an **8-Page Interactive Power BI Dashboard**.
 
 ---
 
-## 🏗️ Project Structure
+## 📊 Dataset Reference
+
+- **Source**: [Kaggle - Indian E-Commerce Customer Behavior and Purchase Dataset](https://www.kaggle.com/datasets/kundanbedmutha/indian-e-commerce-customer-behavior-and-purchase)
+- **Description**: Captures user browsing sessions, customer demographics, marketing channel interactions, cart additions, payment types, purchase quantities, discounts, and customer churn metrics across the Indian e-commerce landscape.
+
+---
+
+## 📌 Architecture & Data Flow
+
+```
+Raw Kaggle CSV (data/raw/Ecommerce.csv)
+                  │
+                  ▼
+         [ 🥉 Bronze Layer ]       ➔ Raw PySpark Ingestion (Immutably stored as Parquet)
+                  │
+                  ▼
+         [ 🥈 Silver Layer ]       ➔ Data cleansing, schema standardization & normalization
+                  │                  into 7 relational entities (customers, products, sessions, etc.)
+                  │
+                  ▼
+         [ 🥇 Gold Layer ]         ➔ Star Schema Dimensional Model (6 Dimension tables + Fact table)
+                  │                  with window-generated surrogate keys
+                  │
+                  ▼
+      [ 🗄️ PostgreSQL DW ]         ➔ Bulk loaded via PySpark JDBC driver to relational `gold` schema
+                  │
+                  ▼
+     [ 📊 Power BI Analytics ]     ➔ 8-Page Interactive BI Dashboard (ecommerce.pbit & ecommerce.pdf)
+```
+
+---
+
+## 📂 Project Structure
 
 ```bash
 Ecommerce-Data-Engineering/
 │
 ├── data/
-│   └── raw/                       # Raw input CSV dataset (e.g., Ecommerce.csv)
+│   └── raw/                       # Raw dataset from Kaggle (Ecommerce.csv)
 │
 ├── scripts/
-│   ├── ingest_bronze.py           # Ingests raw CSV into Bronze Parquet format
-│   ├── read_bronze.py             # Validates and previews Bronze layer
-│   ├── profile_data.py            # Data profiling & exploratory statistics
-│   ├── check_categories.py        # Validates distinct categorical values
-│   ├── transform_silver.py        # Cleans, deduplicates, and normalizes into Silver tables
-│   ├── build_gold.py              # Generates Star Schema (Facts & Dimensions with surrogate keys)
-│   └── load_gold_postgres.py      # Loads Gold layer into PostgreSQL DW via PySpark JDBC
+│   ├── ingest_bronze.py           # Ingests raw CSV into immutable Bronze Parquet
+│   ├── read_bronze.py             # Verifies & inspects Bronze layer
+│   ├── profile_data.py            # Summary statistics and exploratory data profiling
+│   ├── check_categories.py        # Categorical cardinality and value validation
+│   ├── transform_silver.py        # Normalizes & cleans data into Silver entities
+│   ├── build_gold.py              # Builds Star Schema (dim_* surrogate keys & fact_session)
+│   └── load_gold_postgres.py      # Distributed batch loader into PostgreSQL via JDBC
 │
-├── bronze/                        # Bronze Parquet files
-├── silver/                        # Silver Parquet tables (customers, products, sessions, etc.)
-├── gold/                          # Gold Parquet tables (dim_*, fact_session)
+├── bronze/                        # Bronze Parquet storage
+├── silver/                        # Silver normalized tables (customers, dates, products, etc.)
+├── gold/                          # Gold Star Schema Parquet tables
 │
-├── ecommerce_dw.sql               # PostgreSQL DDL schema & business analytics queries
-├── ecommerce.pbit                 # Power BI Dashboard template
+├── ecommerce_dw.sql               # PostgreSQL DDL Schema and Analytical SQL queries
+├── ecommerce.pbit                 # Power BI Template connecting to PostgreSQL
+├── ecommerce.pdf                  # Full 8-page Power BI Dashboard Report export
 ├── requirements.txt               # Python package dependencies
-├── .gitignore                     # Git ignore rules for virtual environments & artifacts
-└── README.md                      # Project documentation
+├── .gitignore                     # Git rules for virtual environments & temporary files
+└── README.md                      # Complete project documentation
 ```
 
 ---
 
-## 🌟 Data Pipeline Flow (Medallion Architecture)
+## 📈 Power BI Business Intelligence Report
 
-### 1. 🥉 Bronze Layer (`scripts/ingest_bronze.py`)
-- Reads raw e-commerce CSV data with inferred schemas.
-- Saves data in optimized, compressed **Parquet** format (`bronze/ecommerce`).
-- Preserves raw source-of-truth data immutably.
+The repository includes a pre-built Power BI report ([`ecommerce.pbit`](ecommerce.pbit)) and an exported PDF report ([`ecommerce.pdf`](ecommerce.pdf)) covering **8 strategic analytics pages**:
 
-### 2. 🥈 Silver Layer (`scripts/transform_silver.py`)
-- Standardizes column naming conventions (snake_case).
-- Cleanses null values, handles data type casting and formatting.
-- Splits the flat dataset into clean, normalized entities:
+### 🎯 Key Performance Indicators (KPIs)
+| KPI Metric | Value | Business Impact |
+| :--- | :--- | :--- |
+| **Total Revenue** | **₹10.12M** | Net sales volume generated |
+| **Total Sessions** | **25,000** | High traffic volume across mobile, desktop & tablet |
+| **Total Purchases** | **5,616** | Completed transactions |
+| **Overall Conversion Rate** | **22.46%** | Session-to-purchase efficiency |
+| **Average Order Value (AOV)** | **₹1,800** | Basket size spending efficiency |
+| **Total Quantity Sold** | **62,000+** | Product units fulfilled |
+| **Cart Abandonment Rate** | **65.20%** | Identified opportunity for re-targeting campaigns |
+| **Repeat Customer Base** | **6,918 (81.9%)** | Strong retention and customer loyalty |
+
+---
+
+### 📑 Dashboard Pages Summary ([ecommerce.pdf](ecommerce.pdf))
+
+1. **Executive Overview**: Executive-level summary of total revenue (₹10.12M), 25K sessions, monthly revenue pacing, product category performance, and funnel breakdown.
+2. **Sales & Revenue Analysis**: Deep dive into AOV (₹1.80K), quantity distribution (62K units), payment method breakdown, and revenue by device.
+3. **Customer Analytics**: Total vs. repeat customer ratio (8,442 total / 6,918 repeat), revenue per customer (₹1.20K), and user tier spending distribution.
+4. **Product Analytics**: Category sales volume, average discount rates (~9.0%), conversion rates across product lines, and revenue-to-quantity correlation.
+5. **Time & Trend Analysis**: Daily and monthly revenue trends (Jan–Dec 2024), weekday seasonality (peaking Tuesdays & Wednesdays), and monthly conversion rates.
+6. **Marketing & Channel Analytics**: Channel-level attribution, session counts vs. revenue yields, and conversion rates by channel.
+7. **Device & Payment Analytics**: Mobile (50.4%) vs. Desktop (39.55%) vs. Tablet (10.05%) share, conversion rate by device, and preferred payment gateways.
+8. **Funnel & Conversion Analysis**: Multi-stage funnel analysis (25K Sessions ➔ 16K Cart Additions [64%] ➔ 5.6K Purchases [22.46%]) and category-level cart abandonment tracking.
+
+---
+
+## 🌟 Medallion Architecture Breakdown
+
+### 🥉 Bronze Layer (`scripts/ingest_bronze.py`)
+- Ingests raw CSV without schema mutation.
+- Stores dataset in snappy-compressed **Parquet** format.
+- Guarantees replayability and data lineage.
+
+### 🥈 Silver Layer (`scripts/transform_silver.py`)
+- Standardizes schema to `snake_case`.
+- Removes duplicates, handles null values, and enforces data types.
+- Splits the flat dataset into 7 relational entities:
   - `customers`
   - `products`
   - `dates`
@@ -76,86 +122,68 @@ Ecommerce-Data-Engineering/
   - `payments`
   - `sessions`
 
-### 3. 🥇 Gold Layer (`scripts/build_gold.py`)
-- Implements **Star Schema Dimensional Modeling**:
-  - **Dimensions**: `dim_customer`, `dim_product`, `dim_date`, `dim_device`, `dim_marketing`, `dim_payment` (with surrogate keys generated via window functions).
-  - **Fact Table**: `fact_session` (capturing transactional session events, quantities, prices, discounts, conversions, and profit metrics).
+### 🥇 Gold Layer (`scripts/build_gold.py`)
+- Models a high-performance **Star Schema**:
+  - **Dimension Tables**: `dim_customer`, `dim_product`, `dim_date`, `dim_device`, `dim_marketing`, `dim_payment` with deterministic surrogate keys (`customer_key`, `product_key`, etc.).
+  - **Fact Table**: `fact_session` storing metrics (quantity, price, discount, profit, cart abandonment flag, purchase flag).
 
-### 4. 🗄️ PostgreSQL Data Warehouse (`scripts/load_gold_postgres.py` & `ecommerce_dw.sql`)
-- Uses PostgreSQL JDBC driver (`org.postgresql:postgresql:42.7.3`) with PySpark to load gold tables directly into a dedicated `gold` schema.
-- Includes pre-built analytical SQL queries in [`ecommerce_dw.sql`](file:///c:/Users/SREESHANTH_K/Desktop/Ecommerce-Data-Engineering/ecommerce_dw.sql) to answer business questions (revenue by category, conversion rates, seasonal trends, customer lifetime value).
-
-### 5. 📊 Business Intelligence (`ecommerce.pbit`)
-- Pre-configured Power BI report template connecting to the PostgreSQL Star Schema.
-- Interactive visualizations tracking:
-  - Sales & Revenue KPIs
-  - Customer demographics & user behavior
-  - Marketing channel ROI & device breakdown
+### 🗄️ PostgreSQL Data Warehouse (`scripts/load_gold_postgres.py` & `ecommerce_dw.sql`)
+- PySpark writes Gold tables into PostgreSQL using the official PostgreSQL JDBC driver.
+- Schema is isolated under the dedicated `gold` schema namespace.
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### 1. Prerequisites
 - **Python 3.10+**
-- **Java 8 or 11 / 17** (required for Apache Spark)
+- **Java 8, 11, or 17** (for Apache Spark)
 - **PostgreSQL 14+**
-- **Power BI Desktop** (optional, for dashboard exploration)
+- **Power BI Desktop** (to view `.pbit` template)
 
-### Installation
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/sreeshanthkprakash-stack/ecommerce-data-analysis.git
-   cd ecommerce-data-analysis
-   ```
-
-2. **Set up a Virtual Environment**:
-   ```bash
-   python -m venv venv
-   # On Windows PowerShell:
-   .\venv\Scripts\Activate.ps1
-   # On Linux/macOS:
-   source venv/bin/activate
-   ```
-
-3. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
----
-
-## ⚙️ Running the Pipeline
-
-Run the scripts in sequential order:
+### 2. Installation & Setup
 
 ```bash
-# Step 1: Ingest raw data to Bronze layer
+# Clone the repository
+git clone https://github.com/sreeshanthkprakash-stack/ecommerce-data-analysis.git
+cd ecommerce-data-analysis
+
+# Create and activate virtual environment
+python -m venv venv
+.\venv\Scripts\Activate.ps1   # Windows
+# source venv/bin/activate    # Linux/macOS
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 3. Pipeline Execution
+
+Run the pipeline scripts in sequential order:
+
+```bash
+# Step 1: Ingest raw CSV to Bronze Parquet
 python scripts/ingest_bronze.py
 
-# Step 2: Clean and transform Bronze to Silver layer
+# Step 2: Clean & normalize into Silver tables
 python scripts/transform_silver.py
 
-# Step 3: Build Gold Star Schema dimension and fact tables
+# Step 3: Build Gold Star Schema (Dimensions & Fact)
 python scripts/build_gold.py
 
-# Step 4: Initialize PostgreSQL tables
-# (Run ecommerce_dw.sql in your PostgreSQL client, e.g., pgAdmin or psql)
+# Step 4: Create tables in PostgreSQL
 psql -U postgres -d ecommerce_dw -f ecommerce_dw.sql
 
-# Step 5: Load Gold tables into PostgreSQL
+# Step 5: Load Gold tables into PostgreSQL via Spark JDBC
 python scripts/load_gold_postgres.py
 ```
 
 ---
 
-## 📈 Sample Business Queries (PostgreSQL)
-
-You can run queries from [`ecommerce_dw.sql`](file:///c:/Users/SREESHANTH_K/Desktop/Ecommerce-Data-Engineering/ecommerce_dw.sql) to extract immediate insights:
+## 🔍 Sample Analytical Queries ([ecommerce_dw.sql](ecommerce_dw.sql))
 
 ```sql
--- Top Performing Product Categories by Revenue
+-- 1. Revenue & Units Sold by Product Category
 SELECT 
     p.product_category,
     COUNT(f.session_key) AS total_sessions,
@@ -165,19 +193,32 @@ FROM gold.fact_session f
 JOIN gold.dim_product p ON f.product_key = p.product_key
 GROUP BY p.product_category
 ORDER BY total_revenue DESC;
+
+-- 2. Marketing Channel Conversion & ROI
+SELECT 
+    m.marketing_channel,
+    COUNT(f.session_key) AS total_sessions,
+    SUM(CASE WHEN f.purchase = 1 THEN 1 ELSE 0 END) AS total_conversions,
+    ROUND(AVG(CASE WHEN f.purchase = 1 THEN 1.0 ELSE 0.0 END) * 100, 2) AS conversion_rate_pct,
+    ROUND(SUM(f.price * f.quantity)::numeric, 2) AS total_revenue
+FROM gold.fact_session f
+JOIN gold.dim_marketing m ON f.marketing_key = m.marketing_key
+GROUP BY m.marketing_channel
+ORDER BY total_revenue DESC;
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Technology Stack
 
-- **Data Processing**: Apache PySpark
-- **Storage Format**: Apache Parquet
-- **Database / DW**: PostgreSQL
-- **BI & Visualization**: Microsoft Power BI
-- **Programming**: Python, SQL
+- **Distributed Processing**: Apache PySpark
+- **Storage Layer**: Apache Parquet (Snappy compressed)
+- **Data Warehousing**: PostgreSQL 15 (Star Schema)
+- **Business Intelligence**: Microsoft Power BI Desktop
+- **Programming & Scripting**: Python 3.10, SQL
+- **Dataset Source**: [Kaggle Indian E-Commerce Dataset](https://www.kaggle.com/datasets/kundanbedmutha/indian-e-commerce-customer-behavior-and-purchase)
 
 ---
 
 ## 📄 License
-This project is open-source and available under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
