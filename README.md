@@ -130,40 +130,9 @@ erDiagram
 
 ---
 
-## 📂 Project Structure
-
-```bash
-Ecommerce-Data-Engineering/
-│
-├── data/
-│   └── raw/                       # Raw dataset from Kaggle (Ecommerce.csv)
-│
-├── scripts/
-│   ├── ingest_bronze.py           # Ingests raw CSV into immutable Bronze Parquet
-│   ├── read_bronze.py             # Verifies & inspects Bronze layer
-│   ├── profile_data.py            # Summary statistics and exploratory data profiling
-│   ├── check_categories.py        # Categorical cardinality and value validation
-│   ├── transform_silver.py        # Normalizes & cleans data into Silver entities
-│   ├── build_gold.py              # Builds Star Schema (dim_* surrogate keys & fact_session)
-│   └── load_gold_postgres.py      # Distributed batch loader into PostgreSQL via JDBC
-│
-├── bronze/                        # Bronze Parquet storage
-├── silver/                        # Silver normalized tables (customers, dates, products, etc.)
-├── gold/                          # Gold Star Schema Parquet tables
-│
-├── ecommerce_dw.sql               # PostgreSQL DDL Schema and Analytical SQL queries
-├── ecommerce.pbit                 # Power BI Template connecting to PostgreSQL
-├── ecommerce.pdf                  # Full 8-page Power BI Dashboard Report export
-├── requirements.txt               # Python package dependencies
-├── .gitignore                     # Git rules for virtual environments & temporary files
-└── README.md                      # Complete project documentation
-```
-
----
-
 ## 📈 Power BI Business Intelligence Report
 
-The repository includes a pre-built Power BI report ([`ecommerce.pbit`](ecommerce.pbit)) and an exported PDF report ([`ecommerce.pdf`](ecommerce.pdf)) covering **8 strategic analytics pages**:
+The repository includes a pre-built Power BI report template ([`ecommerce.pbit`](ecommerce.pbit)) and an exported PDF report ([`ecommerce.pdf`](ecommerce.pdf)) covering **8 strategic analytics dashboards**:
 
 ### 🎯 Key Performance Indicators (KPIs)
 | KPI Metric | Value | Business Impact |
@@ -179,16 +148,103 @@ The repository includes a pre-built Power BI report ([`ecommerce.pbit`](ecommerc
 
 ---
 
-### 📑 Dashboard Pages Summary ([ecommerce.pdf](ecommerce.pdf))
+### 📑 Visual Dashboard Showcase
 
-1. **Executive Overview**: Executive-level summary of total revenue (₹10.12M), 25K sessions, monthly revenue pacing, product category performance, and funnel breakdown.
-2. **Sales & Revenue Analysis**: Deep dive into AOV (₹1.80K), quantity distribution (62K units), payment method breakdown, and revenue by device.
-3. **Customer Analytics**: Total vs. repeat customer ratio (8,442 total / 6,918 repeat), revenue per customer (₹1.20K), and user tier spending distribution.
-4. **Product Analytics**: Category sales volume, average discount rates (~9.0%), conversion rates across product lines, and revenue-to-quantity correlation.
-5. **Time & Trend Analysis**: Daily and monthly revenue trends (Jan–Dec 2024), weekday seasonality (peaking Tuesdays & Wednesdays), and monthly conversion rates.
-6. **Marketing & Channel Analytics**: Channel-level attribution, session counts vs. revenue yields, and conversion rates by channel.
-7. **Device & Payment Analytics**: Mobile (50.4%) vs. Desktop (39.55%) vs. Tablet (10.05%) share, conversion rate by device, and preferred payment gateways.
-8. **Funnel & Conversion Analysis**: Multi-stage funnel analysis (25K Sessions ➔ 16K Cart Additions [64%] ➔ 5.6K Purchases [22.46%]) and category-level cart abandonment tracking.
+#### 1. 📊 Executive Overview
+![Executive Overview](images/01_executive_overview.png)
+- **High-Level KPIs**: ₹10.12M Total Revenue, 25K Sessions, 5,616 Total Purchases, 22.46% Conversion Rate.
+- **Key Insights**: Monthly revenue pacing (peaking in August–September), category-level revenue splits, marketing channel contribution, and device session distribution (Mobile 50.4%, Desktop 39.55%, Tablet 10.05%).
+
+---
+
+#### 2. 💰 Sales & Revenue Analysis
+![Sales & Revenue Analysis](images/02_sales_revenue.png)
+- **Metrics**: Average Order Value (AOV) of ₹1.80K with 62,000+ total product units sold.
+- **Key Insights**: Revenue and volume breakdown by product category, revenue contribution by device type, and balanced payment method distribution.
+
+---
+
+#### 3. 👥 Customer Analytics & Retention
+![Customer Analytics](images/03_customer_analytics.png)
+- **Metrics**: 8,442 Total Customers, 6,918 Repeat Customers (**81.9% retention**), ₹1.20K Average Revenue per Customer.
+- **Key Insights**: Session count distribution per user, Top revenue-generating customers, and Registered vs. Guest customer spending split (56.48% vs. 43.52%).
+
+---
+
+#### 4. 📦 Product & Category Analytics
+![Product Analytics](images/04_product_analytics.png)
+- **Metrics**: 9.0% Average Applied Discount across categories with conversion rates stable between 22%–23%.
+- **Key Insights**: Unit sales volume and revenue generation per product category, category-level discount intensity, and revenue vs. quantity correlation.
+
+---
+
+#### 5. 📅 Time & Trend Analysis
+![Time Analysis](images/05_time_analysis.png)
+- **Metrics**: Complete revenue and conversion velocity across Jan–Dec 2024.
+- **Key Insights**: Day-level transaction tracking, weekday seasonality indicating peak sales velocity on Tuesdays & Wednesdays, and monthly conversion trends.
+
+---
+
+#### 6. 📢 Marketing & Acquisition Channel Analytics
+![Marketing Channel Analytics](images/06_marketing_channel_analytics.png)
+- **Metrics**: Traffic attribution across Direct, Organic Search, Social Media, Paid Ads, and Email.
+- **Key Insights**: Total revenue by channel, session volume vs. yield efficiency, and channel-wise conversion rate benchmarks (peaking up to 30%+).
+
+---
+
+#### 7. 📱 Device & Payment Gateway Analytics
+![Device & Payment Analytics](images/07_device_payment_analytics.png)
+- **Metrics**: Mobile commerce dominance generating ~55.2% of total platform revenue.
+- **Key Insights**: Device conversion comparison (Tablet conversion 26%, Mobile 24%, Desktop 21%), and customer payment gateway distribution (UPI, Cards, NetBanking, COD).
+
+---
+
+#### 8. 🎯 Purchase Funnel & Cart Abandonment
+![Funnel & Conversion](images/08_funnel_conversion.png)
+- **Metrics**: Multi-stage conversion funnel and 65.2% Cart Abandonment Rate.
+- **Key Insights**: Stage-by-stage drop-off (25K Sessions ➔ 16K Added to Cart [64%] ➔ 5.6K Purchases [22.46%]), and category-specific cart abandonment rates for retargeting optimization.
+
+---
+
+## 📂 Project Structure
+
+```bash
+Ecommerce-Data-Engineering/
+│
+├── data/
+│   └── raw/                       # Raw dataset from Kaggle (Ecommerce.csv)
+│
+├── images/                        # High-resolution Power BI dashboard exports
+│   ├── 01_executive_overview.png
+│   ├── 02_sales_revenue.png
+│   ├── 03_customer_analytics.png
+│   ├── 04_product_analytics.png
+│   ├── 05_time_analysis.png
+│   ├── 06_marketing_channel_analytics.png
+│   ├── 07_device_payment_analytics.png
+│   └── 08_funnel_conversion.png
+│
+├── scripts/
+│   ├── ingest_bronze.py           # Ingests raw CSV into immutable Bronze Parquet
+│   ├── read_bronze.py             # Verifies & inspects Bronze layer
+│   ├── profile_data.py            # Summary statistics and exploratory data profiling
+│   ├── check_categories.py        # Categorical cardinality and value validation
+│   ├── transform_silver.py        # Normalizes & cleans data into Silver entities
+│   ├── build_gold.py              # Builds Star Schema (dim_* surrogate keys & fact_session)
+│   ├── load_gold_postgres.py      # Distributed batch loader into PostgreSQL via JDBC
+│   └── export_pdf_pages.ps1       # Script to export Power BI PDF pages to high-res PNGs
+│
+├── bronze/                        # Bronze Parquet storage
+├── silver/                        # Silver normalized tables (customers, dates, products, etc.)
+├── gold/                          # Gold Star Schema Parquet tables
+│
+├── ecommerce_dw.sql               # PostgreSQL DDL Schema and Analytical SQL queries
+├── ecommerce.pbit                 # Power BI Template connecting to PostgreSQL
+├── ecommerce.pdf                  # Full 8-page Power BI Dashboard Report export
+├── requirements.txt               # Python package dependencies
+├── .gitignore                     # Git rules for virtual environments & temporary files
+└── README.md                      # Complete project documentation
+```
 
 ---
 
@@ -304,7 +360,7 @@ ORDER BY total_revenue DESC;
 - **Storage Layer**: Apache Parquet (Snappy compressed)
 - **Data Warehousing**: PostgreSQL 15 (Star Schema)
 - **Business Intelligence**: Microsoft Power BI Desktop
-- **Programming & Scripting**: Python 3.10, SQL
+- **Programming & Scripting**: Python 3.10, SQL, PowerShell
 - **Dataset Source**: [Kaggle Indian E-Commerce Dataset](https://www.kaggle.com/datasets/kundanbedmutha/indian-e-commerce-customer-behavior-and-purchase)
 
 ---
